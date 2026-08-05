@@ -6554,6 +6554,7 @@ public import Mathlib.RingTheory.DedekindDomain.SelmerGroup
 public import Mathlib.RingTheory.Depth.Rees
 public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.Derivation.DifferentialRing
+public import Mathlib.RingTheory.Derivation.Higher
 public import Mathlib.RingTheory.Derivation.Lie
 public import Mathlib.RingTheory.Derivation.MapCoeffs
 public import Mathlib.RingTheory.Derivation.ToSquareZero
