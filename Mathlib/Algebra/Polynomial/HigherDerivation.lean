@@ -44,4 +44,20 @@ theorem hasseDerivHigherDerivation_apply (k : ℕ) :
       HigherDerivation R R[X]) k = hasseDeriv k :=
   rfl
 
+theorem hasseDerivHigherDerivation_isIterative :
+    (hasseDerivHigherDerivation (R := R)).IsIterative :=
+  hasseDeriv_comp
+
+theorem derivative_iterate (k : ℕ) (p : R[X]) :
+    (derivative (R := R))^[k] p = k.factorial • hasseDeriv k p := by
+  have h := (hasseDerivHigherDerivation_isIterative (R := R)).iterate_apply k p
+  simp only [hasseDerivHigherDerivation_apply, hasseDeriv_one] at h
+  exact h
+
+theorem derivative_linearMap_pow (k : ℕ) :
+    (derivative (R := R) : R[X] →ₗ[R] R[X]) ^ k = k.factorial • hasseDeriv k := by
+  have h := (hasseDerivHigherDerivation_isIterative (R := R)).iterate_toLinearMap k
+  simp only [hasseDerivHigherDerivation_apply, hasseDeriv_one] at h
+  exact h
+
 end Polynomial

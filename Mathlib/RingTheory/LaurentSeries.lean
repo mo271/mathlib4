@@ -308,6 +308,10 @@ theorem hasseDerivHigherDerivation_apply {R : Type*} [CommRing R] (k : ℕ) :
       hasseDeriv R k :=
   rfl
 
+theorem hasseDerivHigherDerivation_isIterative {R : Type*} [CommRing R] :
+    (hasseDerivHigherDerivation (R := R)).IsIterative := fun k l =>
+  LinearMap.ext fun f => hasseDeriv_comp (R := R) (V := R) k l f
+
 end HasseDeriv
 
 section Semiring

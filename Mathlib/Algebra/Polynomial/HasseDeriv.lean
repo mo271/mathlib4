@@ -125,28 +125,6 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
     zero_mul, monomial_zero_right]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
-  induction k with
-  | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
-  | succ k ih => ?_
-  ext f n : 2
-  rw [iterate_succ_apply', ← ih]
-  simp only [LinearMap.smul_apply, coeff_smul, LinearMap.map_smul_of_tower, coeff_derivative,
-    hasseDeriv_coeff, ← @choose_symm_add _ k]
-  simp only [nsmul_eq_mul, factorial_succ, mul_assoc, succ_eq_add_one, ← add_assoc,
-    add_right_comm n 1 k, ← cast_succ]
-  rw [← (cast_commute (n + 1) (f.coeff (n + k + 1))).eq]
-  simp only [← mul_assoc]
-  norm_cast
-  congr 2
-  rw [mul_comm (k + 1) _, mul_assoc, mul_assoc]
-  congr 1
-  have : n + k + 1 = n + (k + 1) := by apply add_assoc
-  rw [← choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]
-  congr
-  rw [add_assoc, add_tsub_cancel_left]
-
-set_option backward.isDefEq.respectTransparency false in
 theorem hasseDeriv_comp (k l : ℕ) :
     (@hasseDeriv R _ k).comp (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) := by
   ext i : 2
@@ -171,6 +149,20 @@ theorem hasseDeriv_comp (k l : ℕ) :
   rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
   simp only [add_tsub_cancel_left]
   field
+
+set_option backward.isDefEq.respectTransparency false in
+theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
+  ext f : 1
+  induction k generalizing f with
+  | zero =>
+    rw [hasseDeriv_zero, factorial_zero, Function.iterate_zero, id_eq, one_smul,
+      LinearMap.id_apply]
+  | succ k ih =>
+    rw [Function.iterate_succ, Function.comp_apply, ← ih,
+      ← hasseDeriv_one, ← LinearMap.comp_apply, LinearMap.smul_comp, hasseDeriv_comp,
+      LinearMap.smul_apply, LinearMap.smul_apply,
+      choose_symm_add, choose_one_right, factorial_succ, mul_comm, mul_smul]
+    rfl
 
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by

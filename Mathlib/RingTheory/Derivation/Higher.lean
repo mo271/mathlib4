@@ -88,6 +88,46 @@ theorem map_zero_apply (a : A) : D 0 a = a := by
 
 theorem map_one (n : ℕ) (hn : 0 < n) : D n 1 = 0 := D.map_one' n hn
 
+/-- A higher derivation is *iterative* if its components satisfy the composition law
+`D k ∘ D l = (k + l).choose k • D (k + l)`.
+Hasse derivatives of polynomials, Laurent series, and power series are all iterative. -/
+def IsIterative : Prop :=
+  ∀ (k l : ℕ), (D k).comp (D l) = (k + l).choose k • D (k + l)
+
+variable {D}
+
+theorem IsIterative.comp_apply (hD : D.IsIterative) (k l : ℕ) (a : A) :
+    D k (D l a) = (k + l).choose k • D (k + l) a := by
+  have := congr_arg (fun (f : A →ₗ[R] A) => f a) (hD k l)
+  exact this
+
+theorem IsIterative.iterate_toLinearMap (hD : D.IsIterative) (k : ℕ) :
+    (D 1 : A →ₗ[R] A) ^ k = k.factorial • D k := by
+  induction k with
+  | zero =>
+    ext a
+    simp only [pow_zero, Nat.factorial_zero, one_smul, map_zero]
+    rfl
+  | succ k ih =>
+    rw [pow_succ', ih]
+    ext a
+    simp only [LinearMap.smul_apply, Module.End.mul_apply, map_nsmul]
+    rw [hD.comp_apply, smul_smul, Nat.factorial_succ, add_comm 1 k, mul_comm (k + 1)]
+    congr 1
+    simp [Nat.choose_one_right]
+
+theorem IsIterative.iterate_apply (hD : D.IsIterative) (k : ℕ) (a : A) :
+    (D 1)^[k] a = k.factorial • D k a := by
+  have h_iter : ∀ n (x : A), (D 1)^[n] x = ((D 1 : A →ₗ[R] A) ^ n) x := by
+    intro n
+    induction n with
+    | zero => intro x; rfl
+    | succ n ih =>
+      intro x
+      rw [Function.iterate_succ', Function.comp_apply, pow_succ',
+        Module.End.mul_apply, ih]
+  rw [h_iter, hD.iterate_toLinearMap, LinearMap.smul_apply]
+
 end Semiring
 
 section Algebra
