@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 
 This file establishes the canonical equivalence between higher derivations (Hasse-Schmidt
 derivations) on an algebra `A` and algebra homomorphisms `A →ₐ[R] A⟦X⟧` whose constant
-coefficient is the identity (Matsumura §27).
+coefficient is the identity.
 
 ## Main definitions
 
@@ -147,5 +147,29 @@ theorem ofPowerSeriesAlgHom_toPowerSeriesAlgHom :
   simp
 
 end CommSemiring
+
+section Ring
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable (D : HigherDerivation R A)
+
+/-- The image of an invertible element under `toPowerSeriesRingHom` is a unit in `A⟦X⟧`. -/
+noncomputable def toPowerSeriesUnits (u : Aˣ) : (A⟦X⟧)ˣ :=
+  Units.map D.toPowerSeriesRingHom.toMonoidHom u
+
+@[simp]
+theorem coe_toPowerSeriesUnits (u : Aˣ) :
+    (D.toPowerSeriesUnits u : A⟦X⟧) = D.toPowerSeriesRingHom (u : A) :=
+  rfl
+
+/-- The Hasse derivative of an inverse `u⁻¹` of a unit is given by the power series inverse. -/
+theorem map_inv (u : Aˣ) (n : ℕ) :
+    D n (↑u⁻¹ : A) = coeff n (↑(D.toPowerSeriesUnits u)⁻¹ : A⟦X⟧) := by
+  rw [← coeff_toPowerSeriesRingHom]
+  have : D.toPowerSeriesRingHom (↑u⁻¹ : A) = ↑(D.toPowerSeriesUnits u)⁻¹ := by
+    simp [toPowerSeriesUnits]
+  rw [this]
+
+end Ring
 
 end HigherDerivation

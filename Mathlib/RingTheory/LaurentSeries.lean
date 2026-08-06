@@ -181,7 +181,6 @@ theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1
 
 theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
     (derivative R)^[k] f = k.factorial • (hasseDeriv R k f) := by
-  ext n
   induction k generalizing f with
   | zero => simp
   | succ k ih =>
