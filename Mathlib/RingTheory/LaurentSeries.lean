@@ -10,6 +10,7 @@ public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Int.Interval
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.Derivation.Higher
 public import Mathlib.RingTheory.HahnSeries.PowerSeries
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.PowerSeries.Inverse
@@ -291,6 +292,21 @@ theorem derivative_mul {R : Type*} [CommRing R] (f g : LaurentSeries R) :
   rw [h_anti, Finset.sum_pair (by decide)] at h
   simp only [hasseDeriv_zero, LinearMap.id_coe, id_eq, ← derivative_apply] at h
   rw [h, add_comm]
+
+/-- The Hasse derivatives of Laurent series form a higher derivation.
+This bundles `LaurentSeries.hasseDeriv` into a `HigherDerivation`. -/
+noncomputable def hasseDerivHigherDerivation {R : Type*} [CommRing R] :
+    HigherDerivation R (LaurentSeries R) :=
+  HigherDerivation.mk'
+    (fun k => hasseDeriv R k)
+    hasseDeriv_zero
+    (fun k f g => hasseDeriv_mul k f g)
+
+@[simp]
+theorem hasseDerivHigherDerivation_apply {R : Type*} [CommRing R] (k : ℕ) :
+    (hasseDerivHigherDerivation : HigherDerivation R (LaurentSeries R)) k =
+      hasseDeriv R k :=
+  rfl
 
 end HasseDeriv
 
